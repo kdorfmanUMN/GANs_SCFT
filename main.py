@@ -19,7 +19,10 @@ import torchvision.transforms as transforms
 import torchvision.utils as vutils
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.animation as animation
+from skimage import measure
 import os
 import pandas as pd
 from torchvision.io import read_image
@@ -74,29 +77,27 @@ def weights_init(m):
 # Generator Code
 
 class Generator(nn.Module):
-    def __init__(self, ngpu):
+    def __init__(self, ngpu, latent_dim = 100):
         super(Generator, self).__init__()
         self.ngpu = ngpu
+        self.latent_dim = latent_dim
         self.main = nn.Sequential(
             # input is Z, going into a convolution
-            nn.ConvTranspose3d(nz, ngf * 8, 4, 1, 0, bias=False),
-            nn.BatchNorm2d(ngf * 8),
-            nn.ReLU(True),
+            nn.ConvTranspose3d(self.latent_dim, 512, 4, 1, 0, bias=False, padding_mode='circular'),
+            nn.BatchNorm3d(512),
+            nn.ReLU(inplace=True),
             # state size. (ngf*8) x 4 x 4
-            nn.ConvTranspose2d(ngf * 8, ngf * 4, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ngf * 4),
+            nn.ConvTranspose3d(512, 256, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(256),
             nn.ReLU(True),
             # state size. (ngf*4) x 8 x 8
-            nn.ConvTranspose2d(ngf * 4, ngf * 2, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ngf * 2),
+            nn.ConvTranspose2d(256, 128, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(128),
             nn.ReLU(True),
-            # state size. (ngf*2) x 16 x 16
-            nn.ConvTranspose2d(ngf * 2, ngf, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ngf),
-            nn.ReLU(True),
+
             # state size. (ngf) x 32 x 32
-            nn.ConvTranspose2d(ngf, nc, 4, 2, 1, bias=False),
-            nn.Tanh()
+            nn.ConvTranspose2d(128, 1, 4, 2, 1, bias=False),
+            nn.Sigmoid()
             # state size. (nc) x 64 x 64
         )
 
@@ -110,22 +111,22 @@ class Discriminator(nn.Module):
         self.ngpu = ngpu
         self.main = nn.Sequential(
             # input is (nc) x 64 x 64
-            nn.Conv2d(nc, ndf, 4, 2, 1, bias=False),
+            nn.Conv3d(1, 64, 4, 2, 1, bias=False),
             nn.LeakyReLU(0.2, inplace=True),
             # state size. (ndf) x 32 x 32
-            nn.Conv2d(ndf, ndf * 2, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ndf * 2),
+            nn.Conv3d(64, 128, 4, 2, 1, bias=False),
+            nn.BatchNorm3d(128),
             nn.LeakyReLU(0.2, inplace=True),
             # state size. (ndf*2) x 16 x 16
-            nn.Conv2d(ndf * 2, ndf * 4, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ndf * 4),
+            nn.Conv3d(128, 256, 4, 2, 1, bias=False),
+            nn.BatchNorm3d(256),
             nn.LeakyReLU(0.2, inplace=True),
             # state size. (ndf*4) x 8 x 8
-            nn.Conv2d(ndf * 4, ndf * 8, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ndf * 8),
+            nn.Conv3d(256, 512, 4, 2, 1, bias=False),
+            nn.BatchNorm3d(512),
             nn.LeakyReLU(0.2, inplace=True),
             # state size. (ndf*8) x 4 x 4
-            nn.Conv2d(ndf * 8, 1, 4, 1, 0, bias=False),
+            nn.Conv3d(512, 1, 4, 1, 0, bias=False),
             nn.Sigmoid()
         )
 
@@ -137,7 +138,7 @@ class Discriminator(nn.Module):
 if __name__ == '__main__':
 
     # Root directory for dataset
-    dataroot = "~/Downloads/celeba"
+    # dataroot = "~/Downloads/celeba"
 
     # Number of workers for dataloader
     workers = 1
@@ -150,16 +151,16 @@ if __name__ == '__main__':
     image_size = 64
 
     # Number of channels in the training images. For color images this is 3
-    nc = 3
+    # nc = 3
 
     # Size of z latent vector (i.e. size of generator input)
     nz = 100
 
     # Size of feature maps in generator
-    ngf = 64
+    # ngf = 64
 
     # Size of feature maps in discriminator
-    ndf = 64
+    # ndf = 64
 
     # Number of training epochs
     num_epochs = 1
@@ -243,9 +244,27 @@ if __name__ == '__main__':
         # For each batch in the dataloader
         for i, data in enumerate(dataloader, 0):
             print(data.shape)
+            fig = plt.figure()
+            ax = fig.add_subplot(111,projection='3d')
+            isosurface_value = 0.5
 
-    #         ############################
-    #         # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
+            # inter = data.numpy()
+            verts, faces, normals, values = measure.marching_cubes(data.numpy()[1], isosurface_value)
+
+        # Plot isosurface
+            ax.plot_trisurf(verts[:, 0], verts[:, 1], faces, verts[:, 2], cmap='Spectral', lw=1)
+
+        # Set plot limits and labels
+            ax.set_xlim(0, 32)
+            ax.set_ylim(0, 32)
+            ax.set_zlim(0, 32)
+            ax.set_xlabel('X')
+            ax.set_ylabel('Y')
+            ax.set_zlabel('Z')
+
+            # Show plot
+            plt.show()    #         ############################
+        #         # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
     #         ###########################
     #         ## Train with all-real batch
     #         netD.zero_grad()
