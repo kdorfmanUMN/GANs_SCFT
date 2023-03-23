@@ -3,7 +3,7 @@
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
-from __future__ import print_function
+# from __future__ import print_function
 # %matplotlib inline
 import argparse
 import os
@@ -24,9 +24,9 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.animation as animation
-from skimage import measure
+# from skimage import measure
 import os
-import pandas as pd
+# import pandas as pd
 from torchvision.io import read_image
 from torch.utils.data import Dataset
 
@@ -63,6 +63,12 @@ class NetsDataset(Dataset):
         nets = np.loadtxt(nets_path).astype('float32')
         assert len(nets) == 32 * 32 * 32, "nets shape not on 32 * 32 * 32"
         nets_pt = torch.from_numpy(nets).reshape((1,32, 32, 32))
+
+        # Rescale the input data
+        # max_val = torch.max(nets_pt)
+        # if max_val > 1:
+        #     nets_pt = nets_pt / max_val
+
         return nets_pt
 
 
@@ -148,6 +154,12 @@ class Discriminator(nn.Module):
     def forward(self, input):
         return self.main(input)
 
+# class DivideTransform:
+#     def __init__(self, a):
+#         self.a = a
+#
+#     def __call__(self, sample):
+#         return sample / self.a
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -178,7 +190,7 @@ if __name__ == '__main__':
     # ndf = 64
 
     # Number of training epochs
-    num_epochs = 3
+    num_epochs = 15
 
     # Learning rate for optimizers
     lr = 0.0002
@@ -189,12 +201,16 @@ if __name__ == '__main__':
     # Number of GPUs available. Use 0 for CPU mode.
     ngpu = 1
 
+    # Maximum value of the input density data for rescaling
+    # scaling = 1
+
     # We can use an image folder dataset the way we have it setup.
     # Create the dataset
-    dataset = NetsDataset(nets_dir='/Users/pengyuchen/Documents/Work/NETs_dataset_transformed', img_dir=None)
-
-    # Create the dataloader
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size,
+    # dataset = NetsDataset(nets_dir='/Users/pengyuchen/Documents/Work/NETs_dataset_transformed', img_dir=None,
+    #                       transform=DivideTransform(scaling))
+    dataset = NetsDataset(nets_dir='/Users/pongwu/Documents/Work/UMN/2023/GANs_NETs/NETs_dataset_translated', img_dir=None)
+    # Create the dataloader transforms = transforms.
+    dataloader = torch.utils.data.DataLoader(dataset,batch_size=batch_size,
                                              shuffle=True, num_workers=workers)
 
     # Decide which device we want to run on
@@ -311,7 +327,7 @@ if __name__ == '__main__':
                 print('[%d/%d][%d/%d]\tLoss_D: %.4f\tLoss_G: %.4f\tD(x): %.4f\tD(G(z)): %.4f / %.4f'
                       % (epoch, num_epochs, i, len(dataloader),
                          errD.item(), errG.item(), D_x, D_G_z1, D_G_z2))
-            if (iters% 100 ==0) or ((epoch==num_epochs-1)and(i==len(dataloader)-1)):
+            if (iters% 300 ==0) or ((epoch==num_epochs-1)and(i==len(dataloader)-1)):
                 with torch.no_grad():
                     fake = netG(fixed_noise).detach().cpu()
                 #Plot some training images
@@ -320,7 +336,10 @@ if __name__ == '__main__':
                 # fig = plt.figure()
                 # ax = fig.add_subplot(111, projection='3d')
                 # isosurface_value = 0.5
-                torch.save(fake,os.path.join('/Users/pengyuchen/Documents/Work/output_images',str(epoch)+'_'+str(i)+'.pt'))
+                torch.save(fake,os.path.join('/Users/pongwu/Documents/Work/UMN/2023/GANs_NETs/output_images_translated',str(epoch)+'_'+str(i)+'.pt'))
+                torch.save(fake,os.path.join('/Users/pongwu/Documents/Work/UMN/2023/GANs_NETs/output_images_translated',str(epoch)+'_'+str(i)+'.pt'))
+                torch.save(netG.state_dict(),os.path.join('/Users/pongwu/Documents/Work/UMN/2023/GANs_NETs/output_images_translated','Gweights_'+str(epoch)+'_'+str(i)+'.pt'))
+                torch.save(netD.state_dict(),os.path.join('/Users/pongwu/Documents/Work/UMN/2023/GANs_NETs/output_images_translated','Dweights_'+str(epoch)+'_'+str(i)+'.pt'))
             #         torchvision.utils.save_image(fake, f"samples/{epoch}_{i}.png", normalize=True)
             iters +=1
 
