@@ -90,14 +90,6 @@ for file in os.listdir(path):
         v1 = v1.reshape([32, 32, 32])
         v1 = translate_cell(v1)
         v2 = rotate_cell(v1, 45)
-        # v1 = rotate_cell(v1,rand_rotation_matrix(deflection=1.0))
-        # max_angle = 45
-        # angle = random.uniform(-max_angle,max_angle)
-        # v1 = scipy.ndimage.interpolation.rotate(v1,angle,mode='grid-wrap',axes=(0, 1),reshape=False)
-        # angle = random.uniform(-max_angle,max_angle)
-        # v1 = scipy.ndimage.interpolation.rotate(v1,angle,mode='grid-wrap',axes=(0, 2),reshape=False)
-        # angle = random.uniform(-max_angle,max_angle)
-        # v1 = scipy.ndimage.interpolation.rotate(v1,angle,mode='grid-wrap',axes=(1, 2),reshape=False)
         v3 = v2.reshape(-1)
         np.savetxt(os.path.join(outpath, file), v3)
 

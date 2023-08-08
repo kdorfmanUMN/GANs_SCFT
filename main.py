@@ -1,8 +1,3 @@
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
-
 # from __future__ import print_function
 # %matplotlib inline
 import argparse
@@ -51,7 +46,6 @@ class NetsDataset(Dataset):
         return len(self.nets_list)
 
     def __getitem__(self, idx):
-        # img_path = os.path.join(self.img_dir, self.nets_dir.iloc[idx, 0])
         nets_path = os.path.join(self.nets_dir, self.nets_list[idx])
         # image = read_image(img_path)
         # label = self.nets_dir.iloc[idx, 1]
@@ -75,7 +69,9 @@ class NetsDataset(Dataset):
 # custom weights initialization called on netG and netD
 def weights_init(m):
     classname = m.__class__.__name__
-    if classname.find('Conv') != -1:
+    if classname.find('CircularConvTranspose3d') != -1:
+        nn.init.normal_(m.conv_transpose.weight.data, 0.0, 0.02)
+    elif classname.find('Conv') != -1:
         nn.init.normal_(m.weight.data, 0.0, 0.02)
     elif classname.find('BatchNorm') != -1:
         nn.init.normal_(m.weight.data, 1.0, 0.02)
@@ -83,18 +79,28 @@ def weights_init(m):
 
 
 # Generator Code
-class CircularPadCTranspose3d(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size, stride, padding=0, bias=True):
-        super(CircularPadCTranspose3d, self).__init__()
-        self.conv_transpose = nn.ConvTranspose3d(in_channels, out_channels, kernel_size, stride, padding=0, bias=bias)
+
+class CircularConvTranspose3d(nn.Module):
+    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, output_padding=0, bias=True):
+        super(CircularConvTranspose3d, self).__init__()
+
+        self.conv_transpose = nn.ConvTranspose3d(in_channels, out_channels, kernel_size, stride, padding=0, output_padding=0, bias=bias)
         self.kernel_size = kernel_size
         self.padding = padding
+        self.output_padding = output_padding
         nn.init.normal_(self.conv_transpose.weight, 0.0, 0.02)
 
     def forward(self, x):
-        pad_dims = ((self.padding+1)//2, self.padding//2,)*3
+        # Calculate the circular padding size
+        pad_size = ((self.kernel_size - 1) * self.conv_transpose.stride - 2 * self.padding + self.kernel_size - self.output_padding) // 2
+        pad_dims = (pad_size,)*3
+
+        # Apply circular padding
         x = F.pad(x, pad_dims, mode='circular')
+
+        # Perform convolution transpose
         x = self.conv_transpose(x)
+
         return x
 
 class Generator(nn.Module):
@@ -103,23 +109,24 @@ class Generator(nn.Module):
         self.ngpu = ngpu
         self.latent_dim = latent_dim
         self.main = nn.Sequential(
-            # input is Z, going into a convolution
-            CircularPadCTranspose3d(self.latent_dim, 512, 4, 1, 0, bias=False),
+            CircularConvTranspose3d(self.latent_dim, 1024, 4, 2, 1, bias=False),
+            #1024 2 2 2
+            nn.BatchNorm3d(1024),
+            nn.ReLU(True),
+            nn.ConvTranspose3d(1024, 512, 4, 2, 1, bias=False),
+            # 512 4 4 4
             nn.BatchNorm3d(512),
-            nn.ReLU(inplace=True),
-            # state size. (ngf*8) x 4 x 4
+            nn.ReLU(True),
             nn.ConvTranspose3d(512, 256, 4, 2, 1, bias=False),
+            # 256 8 8 8
             nn.BatchNorm3d(256),
             nn.ReLU(True),
-            # state size. (ngf*4) x 8 x 8
             nn.ConvTranspose3d(256, 128, 4, 2, 1, bias=False),
+            # 128 16  16 16
             nn.BatchNorm3d(128),
             nn.ReLU(True),
-
-            # state size. (ngf) x 32 x 32
             nn.ConvTranspose3d(128, 1, 4, 2, 1, bias=False),
             nn.Sigmoid()
-            # state size. (nc) x 64 x 64
         )
 
     def forward(self, input):
@@ -131,23 +138,19 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
         self.ngpu = ngpu
         self.main = nn.Sequential(
-            # input is (nc) x 64 x 64
             nn.Conv3d(1, 64, 4, 2, 1, bias=False),
+            nn.BatchNorm3d(64),
             nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf) x 32 x 32
+            #(batch size, 64, 16, 16, 16).
             nn.Conv3d(64, 128, 4, 2, 1, bias=False),
             nn.BatchNorm3d(128),
             nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf*2) x 16 x 16
+            # (batch size, 128, 8, 8, 8)
             nn.Conv3d(128, 256, 4, 2, 1, bias=False),
             nn.BatchNorm3d(256),
             nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf*4) x 8 x 8
-            nn.Conv3d(256, 512, 4, 2, 1, bias=False),
-            nn.BatchNorm3d(512),
-            nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf*8) x 4 x 4
-            nn.Conv3d(512, 1, 4, 1, 1, bias=False),
+            #(batch size, 256, 4, 4, 4).
+            nn.Conv3d(256, 1, 4, 1, 0, bias=False),
             nn.Sigmoid()
         )
 
@@ -171,7 +174,7 @@ if __name__ == '__main__':
     workers = 1
 
     # Batch size during training
-    batch_size = 32
+    batch_size = 2
 
     # Spatial size of training images. All images will be resized to this
     #   size using a transformer.
@@ -190,7 +193,7 @@ if __name__ == '__main__':
     # ndf = 64
 
     # Number of training epochs
-    num_epochs = 15
+    num_epochs = 1
 
     # Learning rate for optimizers
     lr = 0.0002
@@ -204,11 +207,12 @@ if __name__ == '__main__':
     # Maximum value of the input density data for rescaling
     # scaling = 1
 
+    out_dir = '/Users/pengyuchen/Documents/Work/past_data/test/'
     # We can use an image folder dataset the way we have it setup.
     # Create the dataset
     # dataset = NetsDataset(nets_dir='/Users/pengyuchen/Documents/Work/NETs_dataset_transformed', img_dir=None,
     #                       transform=DivideTransform(scaling))
-    dataset = NetsDataset(nets_dir='/Users/pongwu/Documents/Work/UMN/2023/GANs_NETs/NETs_dataset_translated', img_dir=None)
+    dataset = NetsDataset(nets_dir='/Users/pengyuchen/Documents/Work/past_data/NETs_dataset_translated', img_dir=None)
     # Create the dataloader transforms = transforms.
     dataloader = torch.utils.data.DataLoader(dataset,batch_size=batch_size,
                                              shuffle=True, num_workers=workers)
@@ -322,27 +326,32 @@ if __name__ == '__main__':
             errG.backward()
             D_G_z2 = output.mean().item()
             optimizerG.step()
-            # Print statistics and save generated samples
-            if i % 20 == 0:
+            # Print statistics
+            if i % 2 == 0:
                 print('[%d/%d][%d/%d]\tLoss_D: %.4f\tLoss_G: %.4f\tD(x): %.4f\tD(G(z)): %.4f / %.4f'
                       % (epoch, num_epochs, i, len(dataloader),
                          errD.item(), errG.item(), D_x, D_G_z1, D_G_z2))
+
+            # Save losses for plotting later
+                G_losses.append(errG.item())
+                D_losses.append(errD.item())
+
+            # Save models and generated samples
             if (iters% 300 ==0) or ((epoch==num_epochs-1)and(i==len(dataloader)-1)):
                 with torch.no_grad():
                     fake = netG(fixed_noise).detach().cpu()
-                #Plot some training images
-                # for s in range
-                # fake.numpy()[0][0]
-                # fig = plt.figure()
-                # ax = fig.add_subplot(111, projection='3d')
-                # isosurface_value = 0.5
-                torch.save(fake,os.path.join('/Users/pongwu/Documents/Work/UMN/2023/GANs_NETs/output_images_translated',str(epoch)+'_'+str(i)+'.pt'))
-                torch.save(fake,os.path.join('/Users/pongwu/Documents/Work/UMN/2023/GANs_NETs/output_images_translated',str(epoch)+'_'+str(i)+'.pt'))
-                torch.save(netG.state_dict(),os.path.join('/Users/pongwu/Documents/Work/UMN/2023/GANs_NETs/output_images_translated','Gweights_'+str(epoch)+'_'+str(i)+'.pt'))
-                torch.save(netD.state_dict(),os.path.join('/Users/pongwu/Documents/Work/UMN/2023/GANs_NETs/output_images_translated','Dweights_'+str(epoch)+'_'+str(i)+'.pt'))
+                    torch.save(fake,os.path.join(out_dir,str(epoch)+'_'+str(i)+'.pt'))
+                    torch.save(fake,os.path.join(out_dir,str(epoch)+'_'+str(i)+'.pt'))
+                    torch.save(netG.state_dict(),os.path.join(out_dir,'Gweights_'+str(epoch)+'_'+str(i)+'.pt'))
+                    torch.save(netD.state_dict(),os.path.join(out_dir,'Dweights_'+str(epoch)+'_'+str(i)+'.pt'))
             #         torchvision.utils.save_image(fake, f"samples/{epoch}_{i}.png", normalize=True)
             iters +=1
-
+    with open(os.path.join(out_dir,'G_loss.txt'),'w') as f:
+        for loss in G_losses:
+            f.write(str(loss)+'\n')
+    with open(os.path.join(out_dir,'D_loss.txt'),'w') as f:
+        for loss in D_losses:
+            f.write(str(loss)+'\n')
     # plt.figure(figsize=(10, 5))
     # plt.title("Generator and Discriminator Loss During Training")
     # plt.plot(G_losses, label="G")
