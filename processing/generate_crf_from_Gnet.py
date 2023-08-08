@@ -1,31 +1,18 @@
-import argparse
-import os
 import random
 import torch
 import torch.nn as nn
 import torch.nn.parallel
-import torch.backends.cudnn as cudnn
-import torch.optim as optim
 import torch.utils.data
 import torch.nn.functional as F
-import torchvision
-import torchvision.datasets as dset
-import torchvision.transforms as transforms
-import torchvision.utils as vutils
 import numpy as np
-# from skimage import measure
 import os
-# import pandas as pd
-from torchvision.io import read_image
 from torch.utils.data import Dataset
 
 # Set random seed for reproducibility
 manualSeed = 500
-# manualSeed = random.randint(1, 10000) # use if you want new results
 print("Random Seed: ", manualSeed)
 random.seed(manualSeed)
 torch.manual_seed(manualSeed)
-
 
 class NetsDataset(Dataset):
     def __init__(self, nets_dir, img_dir, transform=None, target_transform=None):
@@ -35,32 +22,15 @@ class NetsDataset(Dataset):
         for file in nets_list:
             if file.endswith('.txt'):
                 self.nets_list.append(file)
-
     def __len__(self):
         return len(self.nets_list)
-
     def __getitem__(self, idx):
         nets_path = os.path.join(self.nets_dir, self.nets_list[idx])
-        # image = read_image(img_path)
-        # label = self.nets_dir.iloc[idx, 1]
-        # if self.transform:
-        #     image = self.transform(image)
-        # if self.target_transform:
-        #     label = self.target_transform(label)
-        # return image, label
         nets = np.loadtxt(nets_path).astype('float32')
         assert len(nets) == 32 * 32 * 32, "nets shape not on 32 * 32 * 32"
         nets_pt = torch.from_numpy(nets).reshape((1,32, 32, 32))
-
-        # Rescale the input data
-        # max_val = torch.max(nets_pt)
-        # if max_val > 1:
-        #     nets_pt = nets_pt / max_val
-
         return nets_pt
 
-
-# custom weights initialization called on netG and netD
 def weights_init(m):
     classname = m.__class__.__name__
     if classname.find('Conv') != -1:

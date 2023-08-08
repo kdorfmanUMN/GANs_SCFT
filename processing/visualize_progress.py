@@ -3,7 +3,6 @@ import torch
 from skimage import measure
 import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
 # Directory containing .pt files
 dir_path = '/Users/pengyuchen/Documents/GAN/past_data/output_images_DG_SG_SD_notranslation_rotation'
 # Loop over all .pt files in directory
