@@ -16,14 +16,14 @@ class DataProcessor:
         # adapted from http://www.realtimerendering.com/resources/GraphicsGems/gemsiii/rand_rotation.c
         if randnums is None:
             randnums = np.random.uniform(size=(3,))
-        theta, phi, z = 2.0 * np.array([deflection * randnums[0] * np.pi, randnums[1] * np.pi, deflection * randnums[2]])
+        theta, phi, z = 2.0 * np.array(
+            [deflection * randnums[0] * np.pi, randnums[1] * np.pi, deflection * randnums[2]])
         r = np.sqrt(z)
         V = (np.sin(phi) * r, np.cos(phi) * r, np.sqrt(2.0 - z))
         st, ct = np.sin(theta), np.cos(theta)
         R = np.array(((ct, st, 0), (-st, ct, 0), (0, 0, 1)))
         M = (np.outer(V, V) - np.eye(3)).dot(R)
         return M
-
 
     @staticmethod
     def extract_data(in_filename):
@@ -32,44 +32,53 @@ class DataProcessor:
         """
         if not in_filename.endswith('.rf'):
             print('File is not in the correct format')
-        else:
-            # check if the file exists
-            if not os.path.exists(in_filename):
-                print(f"File {in_filename} not found")
-            else:
-                # open the file
-                data = np.loadtxt(in_filename, skiprows=15)
-                cell_data = data[:, 0].reshape(32, 32, 32)
-                cell_data = cell_data.astype('float32')
-                epsilon = 0.01
-                if np.max(cell_data) <= (1.0 + epsilon) and np.min(cell_data) >= (0 - epsilon):
-                    cell_data = data[:, 0].reshape(32, 32, 32)
+            return
 
-                    # Read dimensions from the file
-                    with open(in_filename, 'r') as file:
-                        lines = file.readlines()
-                        dimensions = tuple(map(int, lines[14].split()))
-                    return cell_data, dimensions
-        return
+        if not os.path.exists(in_filename):
+            print(f"File {in_filename} not found")
+            return
+
+        data = np.loadtxt(in_filename, skiprows=15)
+        cell_data = data[:, 0].reshape(32, 32, 32).astype('float32')
+        epsilon = 0.01
+
+        if not np.max(cell_data) <= (1.0 + epsilon) and np.min(cell_data) >= (0 - epsilon):
+            return
+
+        with open(in_filename, 'r') as file:
+            lines = file.readlines()
+            dimensions = tuple(map(int, lines[14].split()))
+
+        return cell_data, dimensions
 
     def crop_rotate(self, density_data, dimensions, new_grid_size):
         """
         Crops and rotates the data.
         """
-        coords = np.linspace(-2, 2, dimensions[0] * 4) #need slight modification if Ngrid on three axes are not identical.
+        # Tile the original cell to a supercell
+        coords = np.linspace(-2, 2,
+                             dimensions[0] * 4)  # need slight modification if Ngrid on three axes are not identical.
         supercell = np.tile(density_data, (4, 4, 4))
-        crop_sizes = [1, 1, 1]
-        crop_translation = np.random.rand(3) - 0.5
-
-        crop = [np.linspace(0, s, g) - s / 2 for s, g in zip(crop_sizes, new_grid_size)]
-        crop_coords = np.stack(np.meshgrid(*crop, indexing='ij'), axis=-1)
-        rotate_coords = np.dot(crop_coords.reshape(-1, 3), self.rand_rotation_matrix())
-
+        # Set up interpolator using the supercell.
         interpolator = RegularGridInterpolator((coords, coords, coords), supercell, method='quintic')
+
+        # Define size of the cropped region. [1, 1, 1] is identical to the original cell.
+        crop_sizes = [1, 1, 1]
+
+        # Compute grid coordinates for the cropped region.
+        crop = [np.linspace(0, s, g) - s / 2 for s, g in zip(crop_sizes, new_grid_size[::-1])]
+        crop_coords = np.stack(np.meshgrid(*crop, indexing='ij'), axis=-1)
+
+        # Apply random translation and rotation to grid coordinates to get new grids
+        crop_translation = np.random.rand(3) - 0.5
+        rotate_coords = np.dot(crop_coords.reshape(-1, 3), self.rand_rotation_matrix())
         crop_coords_translated = rotate_coords + crop_translation
+
+        # Interpolate data on new grid
         new_grid = interpolator(crop_coords_translated)
 
         return new_grid
+
     def process_files(self, in_filename, out_filename, new_grid_size):
         """
         Main processing logic.

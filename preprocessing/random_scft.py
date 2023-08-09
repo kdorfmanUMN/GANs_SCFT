@@ -1,10 +1,7 @@
-# This file aims to provide random initialized inputs for SCFT calculations on PSCFPP software.
-
 import os
 import random
 import shutil
 import argparse
-
 
 def read_param(filename):
     with open(filename, 'r') as file:
@@ -12,18 +9,16 @@ def read_param(filename):
 
 
 def edit_param(lines, fA, chiN, epsilon):
-    lines[3] = "    " + lines[3].split()[0] + "    " + str("%9.3f" % epsilon) + "\n"
-    lines[9] = "      " + lines[9].split()[0] + "         " + lines[9].split()[1] + str("%9.3f" % fA) + "\n"
-    lines[10] = "                       " + lines[10].split()[0] + str("%9.3f" % (1 - fA)) + "\n"
-    lines[17] = "                       " + lines[17].split()[0] + "     " + lines[17].split()[1] + str(
-        "%9.1f" % chiN) + "\n"
+    lines[3] = "    {:<20} {:9.3f}\n".format(lines[3].split()[0], epsilon)
+    lines[9] = "      {:<15} {:<15}{:9.3f}\n".format(lines[9].split()[0], lines[9].split()[1], fA)
+    lines[10] = "                       {:<15}{:9.3f}\n".format(lines[10].split()[0], (1 - fA))
+    lines[17] = "                       {:<15} {:<15}{:9.1f}\n".format(lines[17].split()[0], lines[17].split()[1], chiN)
     return lines
 
 
 def write_param(path, lines):
     with open(path, 'w') as file:
         file.writelines(lines)
-
 
 def main(args):
     for i in range(args.n):
@@ -39,6 +34,8 @@ def main(args):
         os.makedirs(path, exist_ok=True)
         path = os.path.join(args.output_dir, args.group, str(i), 'c')
         os.makedirs(path, exist_ok=True)
+
+        # Copy command files
         path = os.path.join(args.output_dir, args.group, str(i), 'command')
         shutil.copyfile(args.command_file, path)
 
@@ -49,8 +46,7 @@ def main(args):
         write_param(path, lines)
 
         # Randomly pick an initial guess 'rgrid' file and move to subdirs
-        file = random.choice(args.rgrid_files)
-        path_in = os.path.join(args.output_dir, file)
+        path_in = os.path.join(args.in_dir, random.choice(args.rgrid_files))
         path_out = os.path.join(args.output_dir, args.group, str(i), 'rgrid')
         shutil.copyfile(path_in, path_out)
 
@@ -59,10 +55,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate parameters and directories for SCFT calculations.")
 
     # Arguments
-    parser.add_argument('--param_file', default='param', help="Path to example param file.")
-    parser.add_argument('--command_file', default='command', help="Path to example command file.")
+    parser.add_argument('--in_dir', nargs='+', required=True, help="List of rgrid files.")
     parser.add_argument('--rgrid_files', nargs='+', default=['DG_fA35', 'DG_fA40', 'DG_fA45'],
                         help="List of rgrid files.")
+    parser.add_argument('--param_file', default='param', help="Path to example param file.")
+    parser.add_argument('--command_file', default='command', help="Path to example command file.")
     parser.add_argument('--fA_min', type=float, default=0.35, help="Minimum value for fA.")
     parser.add_argument('--fA_max', type=float, default=0.45, help="Maximum value for fA.")
     parser.add_argument('--chiN_min', type=float, default=15.0, help="Minimum value for chiN.")
@@ -76,3 +73,4 @@ if __name__ == "__main__":
     opt = parser.parse_args()
 
     main(opt)
+
