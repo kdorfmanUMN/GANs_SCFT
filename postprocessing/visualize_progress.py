@@ -3,6 +3,7 @@ import torch
 from skimage import measure
 import matplotlib.pyplot as plt
 import numpy as np
+
 # Directory containing .pt files
 dir_path = '/Users/pengyuchen/Documents/GAN/past_data/output_images_DG_SG_SD_notranslation_rotation'
 # Loop over all .pt files in directory
@@ -28,7 +29,7 @@ for file_name in os.listdir(dir_path):
             for i in range(6):
                 for j in range(10):
                     count = i * 10 + j
-                    if np.max(x[count, 0]) >= isosurface_value+0.01:
+                    if np.max(x[count, 0]) >= isosurface_value + 0.01:
                         verts, faces, normals, values = measure.marching_cubes(x[count, 0], isosurface_value)
                         axs[i, j].plot_trisurf(verts[:, 0], verts[:, 1], faces, verts[:, 2], cmap='Spectral', lw=1)
                         axs[i, j].set_xlim(0, 32)
@@ -39,9 +40,9 @@ for file_name in os.listdir(dir_path):
                         axs[i, j].set_zlabel('Z')
                         axs[i, j].set_axis_off()  # hide the axes label
                     else:
-                        axs[i, j].plot([0],[0])
+                        axs[i, j].plot([0], [0])
                     # Adjust size of subplot
-                    #axs[i, j].get_proj = lambda: np.dot(Axes3D.get_proj(axs[i, j]), np.diag([1.5, 1.5, 1.5, 1]))
+                    # axs[i, j].get_proj = lambda: np.dot(Axes3D.get_proj(axs[i, j]), np.diag([1.5, 1.5, 1.5, 1]))
                     count += 1
 
             # Save figure as .png with same name as .pt file
