@@ -43,7 +43,7 @@ add citation here
 - **SCFT:** [Broadly Accessible Self-Consistent Field Theory for Block Polymer Materials Discovery](https://pubs.acs.org/doi/full/10.1021/acs.macromol.6b00107).
 - **Software Tools:**
     - **SCFT Simulations:** [PSCF (C++/CUDA)](https://github.com/dmorse/pscfpp).
-    - **Visualization of Density Fields:** [Polymer Visual](https://github.com/kdorfmanUMN/polymer_visual.).
+    - **Visualization of Density Fields:** [Polymer Visual](https://github.com/kdorfmanUMN/polymer_visual).
 ## Getting Started
 
 ### Prerequisites
