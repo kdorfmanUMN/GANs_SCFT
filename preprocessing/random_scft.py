@@ -1,3 +1,5 @@
+#This script generates random parameters for SCFT calculations. It creates a directory for each set of parameters and copies the command and param files into it.
+
 import os
 import random
 import shutil
