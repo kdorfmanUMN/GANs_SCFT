@@ -123,9 +123,14 @@ encompassing all well-known network phases as well as several that had not been 
 <font size="-1"><b>Fig. 3:</b>  Free energy histogram of generated candidate network phases and represented network phases.
 
 ## Contributing
+For contributing or submitting pull requests, please contact the author:
+- Pengyu Chen [chen6580@umn.edu](mailto:chen6580@umn.edu)
 
+## Acknowledgments
 
-
-
+The authors would like to thank Qingyuan Jiang, Benjamin R. Magruder, Dr. Guo Kang Cheong, Prof. Chris J. Bartel, 
+and Prof. Frank S. Bates for their valuable inputs.
+This work was supported primarily by the National Science Foundation through the University of Minnesota MRSEC under Award Number DMR-2011401. 
+Computational resources provided in part by the Minnesota Supercomputing Institute.
 
 
