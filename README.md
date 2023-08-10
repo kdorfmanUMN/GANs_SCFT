@@ -1,21 +1,32 @@
 # GANs_SCFT
 
 <!-- TABLE OF CONTENTS -->
-- [Overview](##overview)
-- [Citing this work](##Citing-this-work)
-- [Relevant work](##Relevant-work)
-
+## Table of Contents
+- [Overview](#overview)
+- [Citing this work](#citing-this-work)
+- [Relevant work](#relevant-work)
+- [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Data Downloads](#data-downloads)
+- [Usage](#usage)
+    - [Data Generation](#data-generation)
+    - [Data Preprocessing](#data-preprocessing)
+    - [Training](#training)
+    - [Generate guesses using the pretrained GANs](#generate-guesses-using-the-pretrained-gans)
+- [Results](#results)
 
 ## Overview
-This repo is part of the published work [Generative Block Polymer Phase Discovery](http://doi/), which 
-describes a method to train Deep Convoluntional Generative Adversarial Networks (DCGANs) to generate initial guess 
-fields for self-consistent field theory (SCFT) simulations for phase discovery.
+This repo is part of the published work [Generative Block Polymer Phase Discovery](http://doi/), which describes a method 
+to train Deep Convolutional Generative Adversarial Networks (DCGANs) to generate initial guess fields for self-consistent
+field theory (SCFT) simulations for phase discovery.
 
-The DCGANs were trained on a set of 3D density fields of 5 known block polymer phases (single-gyroid, single-diamond, 
-single-primitive, double-gyroid, and double diamond) generated from SCFT simulation trajectories. 
-A data augmentation strategy including tiling, random translation and rotation of the fields were applied.
-Generated fields from the DCGANs were used as initial guess fields to seed new SCFT simulations, which leads to the discovery 
-of novel phases.
+The DCGANs were trained on a set of 3D density fields of 5 known block polymer phases 
+(single-gyroid, single-diamond, single-primitive, double-gyroid, and double diamond) 
+generated from SCFT simulation trajectories. A data augmentation strategy, 
+including tiling, random translation, and rotation of the fields, was applied. 
+Generated fields from the DCGANs were used as initial guess fields to seed new SCFT simulations, 
+leading to the discovery of novel phases.
+
 <br>
 <p align="center">
 <img src="docs/figs/workflow.png" alt="workflow" width="800"/><br>
@@ -31,14 +42,14 @@ add citation here
 DCGANs was first introduced in the paper [Unsupervised Representation 
 Learning with Deep Convolutional Generative Adversarial Networks](https://arxiv.org/abs/1511.06434). 
 See also the [DCGAN tutorial](https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html) in PyTorch.
-The SCFT simulations were performed using the open-source software package [PSCF](https://github.com/dmorse/pscfpp).
-The visualization of polymer fields was performed using the open-source software [Polymer Visual](https://github.com/kdorfmanUMN/polymer_visual.). 
+The SCFT simulations were performed using the open-source software package [PSCF (C++/CUDA)](https://github.com/dmorse/pscfpp).
+The visualization of polymer density fields was performed using the open-source software [Polymer Visual](https://github.com/kdorfmanUMN/polymer_visual.). 
 
 ## Getting Started
 
 ### Prerequisites
   ```sh
-  pip install -m requirements.txt
+  pip install -r requirements.txt
   ```
 ### Data Downloads
 
@@ -49,7 +60,7 @@ The 'data' folder consists of 18,273 3D density field data in '.txt'. Each data 
 
 ### Data Generation 
 
-The details of data generation can be found in the paper[]. Calculation is much mor
+(The details of data generation can be found in the paper[].)
 
 ### Data Preprocessing
 Each density field '.rf' file from SCFT calculation is tiled, randomly translated, and rotated for training. 
@@ -69,12 +80,12 @@ The data_processor can also be called as a method in Python.<br>
   ```
 
 ### Training
+
 Train the DCGANs using preprocessed data:
    ```sh
      cd ./train
      python GAN_train.py --dataroot /path/to/data --out_dir_images /path/to/output/image/dir --out_dir_model /path/to/output/model/dir
    ```
-
 --dataroot: directory that contains processed training data. <br>
 --out_dir_images: directory to save generated tensor (.pt) during the training process.<br>
 --out_dir_model: directory to save model parameters (.pt) during the training process.<br>
@@ -93,6 +104,25 @@ The output images from a set of fixed noise can be visualized to track the train
 
 ### Generate guesses using the pretrained GANs
 
+Generate density fields by passing random latent vectors to the generator.
+These generated guess fields were then used as input for SCFT calculations.
+ ```sh
+    cd ./postprocessing
+    python generate_guess.py --weight_path ../model/Gweights_45_15.pt --out_dir /path/to/output/dir --num_images 5000
+ ```
+--weight_path: path to the pretrained generator weights. <br>
+--out_dir: directory to save generated guesses (.rf).<br>
+--num_images: number of density initial guesses to generate.<br>
+
+## Results
+Out of 5,000 SCFT calculations performed at a set state point using GAN-generated initial guesses, 545 converged successfully. 
+This led to the identification of 349 candidate network phases after considering degeneracy, 
+encompassing all well-known network phases as well as several that had not been previously explored.
+
+<img src="docs/figs/histogram.png" alt="histogram" width="800">
+<font size="-1"><b>Fig. 3:</b>  Free energy histogram of generated candidate network phases and represented network phases.
+
+## Contributing
 
 
 

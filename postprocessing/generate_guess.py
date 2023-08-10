@@ -96,8 +96,17 @@ def generate_images(weight_path, out_dir, num_images):
             save_path = os.path.join(out_dir, f'guess_{i + 1}.rf')
             save_as_rf(fake_cpu, save_path)
 
+def main(args):
+    weight_path = args.weight_path
+    out_dir = args.out_dir
+    num_images = args.num_images
+    generate_images(weight_path, out_dir, num_images)
 
-weight_path = '../model/Gweights_45_15.pt'
-out_dir = '.' # Change it to the output directories
-num_images = 5000
-generate_images(weight_path, out_dir, num_images)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Generate 3D density fields using the trained GAN generator')
+    parser.add_argument('--weight_path', type=str, help='Path to the pretrained generator weights')
+    parser.add_argument('--out_dir', type=str, help='Output directory to save the generated .rf files')
+    parser.add_argument('--num_images', type=int, default=5000, help='Number of density fields to generate')
+    args = parser.parse_args()
+    main(args)
+
