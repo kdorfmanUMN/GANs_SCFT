@@ -31,15 +31,15 @@ Field Theory (SCFT) simulations for phase discovery.
 <font size="-1"><b>Fig. 1:</b> Overview of the polymer field theory generation process.</font>
 </p>
 
-### Citing this work
+### Citing This Work
 For referencing or leveraging parts of this work, please refer to:
 
 add citation here
 
-### Relevant work
+### Relevant Work
 - **GANs:** [Generative Adversarial Networks](https://arxiv.org/abs/1406.2661).
 - **DCGANs:** [Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks](https://arxiv.org/abs/1511.06434). 
-- **DCGAN Tutorials:** [PyTorch implementation](https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html) and [TensorFlow implementation](https://www.tensorflow.org/tutorials/generative/dcgan).
+- **DCGANs Tutorials:** [PyTorch implementation](https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html) and [TensorFlow implementation](https://www.tensorflow.org/tutorials/generative/dcgan).
 - **SCFT:** [Broadly Accessible Self-Consistent Field Theory for Block Polymer Materials Discovery](https://pubs.acs.org/doi/full/10.1021/acs.macromol.6b00107).
 - **Software Tools:**
     - **SCFT Simulations:** [PSCF (C++/CUDA)](https://github.com/dmorse/pscfpp).
