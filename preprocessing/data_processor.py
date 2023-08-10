@@ -90,7 +90,7 @@ class DataProcessor:
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Process images for training')
+    parser = argparse.ArgumentParser(description='Process docs for training')
     parser.add_argument('in_filename', type=str, help='Path to input image')
     parser.add_argument('out_filename', type=str, help='Path to output image')
     parser.add_argument('--grid', nargs=3, type=int, default=[32, 32, 32], help='Size of the new grid')

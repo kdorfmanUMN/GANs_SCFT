@@ -205,7 +205,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataroot', default='/Users/pengyuchen/Documents/GAN/past_data/testdata',
                         help='input dataset file')
-    parser.add_argument('--out_dir_images', default='', help='output file for generated images')
+    parser.add_argument('--out_dir_images', default='', help='output file for generated docs')
     parser.add_argument('--out_dir_model', default='', help='output file for model')
     parser.add_argument('--workers', type=int, default=1, help='number of workers')
     parser.add_argument('--ngpu', type=int, default=1, help='number of GPUs to use')
@@ -217,7 +217,7 @@ if __name__ == '__main__':
     parser.add_argument('--nepochs', type=int, default=60, help='number of training epochs')
     parser.add_argument('--lr', type=float, default=0.0002, help='learning rate for optimisers')
     parser.add_argument('--beta1', type=float, default=0.5, help='beta1 hyperparameter for Adam optimiser')
-    parser.add_argument('--save_iters', type=int, default=150, help='step for saving paths and generated images')
+    parser.add_argument('--save_iters', type=int, default=150, help='step for saving paths and generated docs')
     args = parser.parse_args()
 
     main(args)

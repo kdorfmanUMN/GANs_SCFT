@@ -55,7 +55,7 @@ class IsosurfaceVisualizer:
 
         Parameters:
         - dir_path: Directory containing the .pt files.
-        - output_dir: Directory where the output images will be saved.
+        - output_dir: Directory where the output docs will be saved.
         """
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)

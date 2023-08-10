@@ -33,7 +33,7 @@ class Generator(nn.Module):
         return self.main(input)
 
 
-# Function to save the generated images as .rf files
+# Function to save the generated docs as .rf files
 def save_as_rf(fake, save_path):
     """
     Convert the generated tensor into the .rf format and save it.
@@ -59,15 +59,15 @@ def save_as_rf(fake, save_path):
         np.savetxt(output_file, density_AB, delimiter='\t', fmt='%.16f')
 
 
-# Function to generate images
+# Function to generate docs
 def generate_images(weight_path, out_dir, num_images):
     """
-    Generate a set of 3D images using the trained GAN generator.
+    Generate a set of 3D docs using the trained GAN generator.
 
     Parameters:
     - weight_path: Path to the pretrained generator weights.
     - out_dir: Output directory to save the generated .rf files.
-    - num_images: Number of images to generate.
+    - num_images: Number of docs to generate.
     """
     # Ensure the output directory exists
     if not os.path.exists(out_dir):
@@ -82,7 +82,7 @@ def generate_images(weight_path, out_dir, num_images):
     generator.load_state_dict(new_state_dict)
     generator.eval()
 
-    # Generate the specified number of images
+    # Generate the specified number of docs
     with torch.no_grad():
         for i in range(num_images):
             # Assuming the generator takes random noise as input
