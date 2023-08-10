@@ -38,16 +38,19 @@ class DataProcessor:
             print(f"File {in_filename} not found")
             return
 
+        with open(in_filename, 'r') as file:
+            lines = file.readlines()
+            dimensions = tuple(map(int, lines[14].split()))
+
+        if len(dimensions) != 3:
+            return
+
         data = np.loadtxt(in_filename, skiprows=15)
-        cell_data = data[:, 0].reshape(32, 32, 32).astype('float32')
+        cell_data = data[:, 0].reshape(dimensions).astype('float32')
         epsilon = 0.01
 
         if not np.max(cell_data) <= (1.0 + epsilon) and np.min(cell_data) >= (0 - epsilon):
             return
-
-        with open(in_filename, 'r') as file:
-            lines = file.readlines()
-            dimensions = tuple(map(int, lines[14].split()))
 
         return cell_data, dimensions
 
@@ -57,7 +60,7 @@ class DataProcessor:
         """
         # Tile the original cell to a supercell
         coords = np.linspace(-2, 2,
-                             dimensions[0] * 4)  # need slight modification if Ngrid on three axes are not identical.
+                             dimensions[0] * 4)  # need slight modification if original Ngrid on three axes are not identical.
         supercell = np.tile(density_data, (4, 4, 4))
         # Set up interpolator using the supercell.
         interpolator = RegularGridInterpolator((coords, coords, coords), supercell, method='quintic')
@@ -81,7 +84,7 @@ class DataProcessor:
 
     def process_files(self, in_filename, out_filename, new_grid_size=(32,32,32)):
         """
-        Main processing logic.
+        Main processing logic. Extracts data from the input file, crops and rotates it, and saves it to the output file.
         """
         cell_data, dimensions = self.extract_data(in_filename)
         if cell_data is not None:

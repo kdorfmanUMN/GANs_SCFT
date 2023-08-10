@@ -61,7 +61,7 @@ For training, every data point is viewed as a grayscale 3D image (1 x 32 x 32 x 
 ### Data Preparation
 - **Data Generation:** <br>
 The raw density data are extracted from SCFT trajectories that converge to five known network phases: single-gyroid, single-diamond, 
-singe-primitive, double-gyroid, and double primitive. The inputs and outputs of the SCFT simulations are provided in [DRUM](link).
+singe-primitive, double-gyroid, and double-primitive. The inputs and outputs of the SCFT simulations are provided in [Data Repository for U of M (DRUM)](link).
 
 
 
