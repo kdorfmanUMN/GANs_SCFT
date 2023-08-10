@@ -1,4 +1,4 @@
-# GANs_SCFT (Generated Block Polymer Phase Discovery)
+# GANs_SCFT (Generative Block Polymer Phase Discovery)
 
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
@@ -18,8 +18,8 @@
 
 ## Overview
 This repo is part of the submitted work [Generative Block Polymer Phase Discovery](http://doi/), which describes a method 
-to train Deep Convolutional Generative Adversarial Networks (DCGANs) to generate initial guess fields for self-consistent
-field theory (SCFT) simulations for phase discovery.
+to train Deep Convolutional Generative Adversarial Networks (DCGANs) to generate initial guess fields for Self-Consistent
+Field Theory (SCFT) simulations for phase discovery.
 
 #### Key Highlights:
 - **Data Source:** 3D density fields of five established block polymer phases from SCFT trajectories.
@@ -60,7 +60,7 @@ For training, every data point is viewed as a grayscale 3D image (1 x 32 x 32 x 
 
 ### Data Preparation
 - **Data Generation:** <br>
-The raw density fields are extracted from SCFT trajectories that converge to five known network phases: single-gyroid, single-diamond, 
+The raw density data are extracted from SCFT trajectories that converge to five known network phases: single-gyroid, single-diamond, 
 singe-primitive, double-gyroid, and double primitive. The inputs and outputs of the SCFT simulations are provided in [DRUM](link).
 
 
@@ -68,7 +68,7 @@ singe-primitive, double-gyroid, and double primitive. The inputs and outputs of 
 - **Data Augmentation:** <br>
 
   - **Description:**  
-    Each `.rf` file, representing a density field obtained from the SCFT calculation, undergoes a series of data augmentation techniques: tiling, random translation, and rotation. Fields showcasing unphysical density values, specifically where \( \phi_A > 1 \) or \( \phi_A < 0 \), are excluded.
+    Each `.rf` file, representing a density field obtained from the SCFT calculation, undergoes a series of data augmentation techniques: tiling, random translation, and rotation. Fields showcasing unphysical density values, specifically where `phi_A > 1` or `phi_A < 0`, are excluded.
 
   - **Command Line Execution:**  
     Navigate to the preprocessing directory and execute the data processing script:
@@ -78,7 +78,7 @@ singe-primitive, double-gyroid, and double primitive. The inputs and outputs of 
      ```
      `--in_filename`: Path to the input density field file (`.rf`).<br>
      `--out_filename`: Path to the output 3D image file (`.txt`).<br>
-     `--grid`: (Optional) A tuple specifying the output size. The default is (32, 32, 32).<br>
+     `--grid`: (Optional) A tuple specifying the output dimensions. The default is (32, 32, 32).<br>
 
   - **Python Method Execution:**  
     Instead of command-line execution, you can utilize it directly within a Python script:
@@ -104,7 +104,7 @@ singe-primitive, double-gyroid, and double primitive. The inputs and outputs of 
     <br>
 - **Visualizing the Training Progression:** <br>
 The output images from a set of fixed noise can be visualized to track the training progression using `isosurface_visualizer'. 
-An example is provided in 'visualize_progress.py'.
+An example is provided in './train/visualize_progress.py'.
   ```py
     visualizer = IsosurfaceVisualizer(isosurface_value=0.5)
     visualizer.visualize_directory(<input_directory>, <output_directory>>)
@@ -118,7 +118,7 @@ An example is provided in 'visualize_progress.py'.
 </p>
 
 ### Field Generation using the Trained Generator
-Generate density fields by feeding random latent vectors to the generator. These then act as inputs for SCFT calculations.
+Generate density fields by feeding random latent vectors to the generator.
   ```sh
     cd ./postprocessing
     python generate_guess.py --weight_path ../model/Gweights_45_15.pt --out_dir /path/to/output/dir --num_images 5000
@@ -126,6 +126,11 @@ Generate density fields by feeding random latent vectors to the generator. These
 `--weight_path`: path to the pretrained generator weights. <br>
 `--out_dir`: directory to save generated guesses.<br>
 `--num_images`: number of density initial guesses to generate.<br>
+
+### SCFT backends
+
+Generated density fields are used as initial guesses for SCFT simulations at a fixed state point. 
+All the PSCF inputs and outputs are provided in [DRUM](link).
 
 ## Results
 
