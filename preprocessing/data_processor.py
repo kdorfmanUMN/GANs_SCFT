@@ -79,7 +79,7 @@ class DataProcessor:
 
         return new_grid
 
-    def process_files(self, in_filename, out_filename, new_grid_size):
+    def process_files(self, in_filename, out_filename, new_grid_size=(32,32,32)):
         """
         Main processing logic.
         """
@@ -91,8 +91,8 @@ class DataProcessor:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process docs for training')
-    parser.add_argument('in_filename', type=str, help='Path to input image')
-    parser.add_argument('out_filename', type=str, help='Path to output image')
+    parser.add_argument('--in_filename', type=str, help='Path to input image')
+    parser.add_argument('--out_filename', type=str, help='Path to output image')
     parser.add_argument('--grid', nargs=3, type=int, default=[32, 32, 32], help='Size of the new grid')
     args = parser.parse_args()
 

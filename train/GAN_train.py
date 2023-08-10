@@ -205,8 +205,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataroot', default='/Users/pengyuchen/Documents/GAN/past_data/testdata',
                         help='input dataset file')
-    parser.add_argument('--out_dir_images', default='', help='output file for generated docs')
-    parser.add_argument('--out_dir_model', default='', help='output file for model')
+    parser.add_argument('--out_dir_images', default='', help='output dir for generated images')
+    parser.add_argument('--out_dir_model', default='', help='output dir for model')
     parser.add_argument('--workers', type=int, default=1, help='number of workers')
     parser.add_argument('--ngpu', type=int, default=1, help='number of GPUs to use')
     parser.add_argument('--batch_size', type=int, default=128, help='batch size during training')

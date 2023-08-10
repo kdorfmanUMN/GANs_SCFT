@@ -1,4 +1,4 @@
-from isosurface_visualizer import IsosurfaceVisualizer
+from train.isosurface_visualizer import IsosurfaceVisualizer
 
 # Initialize visualizer
 visualizer = IsosurfaceVisualizer(isosurface_value=0.2)

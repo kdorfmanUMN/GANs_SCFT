@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/GAN_NETS.iml" filepath="$PROJECT_DIR$/.idea/GAN_NETS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/GANs_SCFT.iml" filepath="$PROJECT_DIR$/.idea/GANs_SCFT.iml" />
     </modules>
   </component>
 </project>
