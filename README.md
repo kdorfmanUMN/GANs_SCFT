@@ -18,7 +18,7 @@ Generated fields from the DCGANs were used as initial guess fields to seed new S
 of novel phases.
 <br>
 <p align="center">
-<img src="docs/figs/workflow.png" alt="workflow" width="550"/><br>
+<img src="docs/figs/workflow.png" alt="workflow" width="800"/><br>
 <font size="-1"><b>Fig. 1:</b> Workflow of generated polymer field theory.</font>
 </p>
 
@@ -88,8 +88,8 @@ The output images from a set of fixed noise can be visualized to track the train
 <input_directory>: directory to the saved generated tensor (.pt).<br>
 <output_directory>: directory to save isosurface plots (.png).<br>
 
-![Animated GIF](docs/figs/GANs_training.gif)
-
+<img src="docs/figs/GANs_training.gif" alt="Animated GIF" width="800">
+<font size="-1"><b>Fig. 2:</b> Progression of generated density fields during the training process.</font>
 
 ### Generate guesses using the pretrained GANs
 
