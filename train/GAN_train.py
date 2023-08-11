@@ -211,7 +211,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=128, help='batch size during training')
     parser.add_argument('--nc', type=int, default=1, help='number of channels')
     parser.add_argument('--nz', type=int, default=100, help='size of z latent vector')
-    parser.add_argument('--ngf', type=int, default=32, help='size of feature maps in generator')
+    parser.add_argument('--ngf', type=int, default=64, help='size of feature maps in generator')
     parser.add_argument('--ndf', type=int, default=64, help='size of feature maps in discriminator')
     parser.add_argument('--nepochs', type=int, default=60, help='number of training epochs')
     parser.add_argument('--lr', type=float, default=0.0002, help='learning rate for optimisers')
