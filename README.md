@@ -1,4 +1,4 @@
-# GANs_SCFT (Generative Block Polymer Phase Discovery)
+# GANs-SCFT (Generative Block Polymer Phase Discovery)
 
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
@@ -17,7 +17,7 @@
 - [Acknowledgments](#acknowledgments)
 
 ## Overview
-This repo is part of the submitted work [Generative Block Polymer Phase Discovery](http://doi/), which describes a method 
+This repository is part of the submitted work [Generative Block Polymer Phase Discovery](http://doi/), which describes a method 
 to train Deep Convolutional Generative Adversarial Networks (DCGANs) to generate initial guess fields for Self-Consistent
 Field Theory (SCFT) simulations for phase discovery.
 
@@ -61,14 +61,15 @@ For training, every data point is viewed as a grayscale 3D image (1 x 32 x 32 x 
 ### Data Preparation
 - **Data Generation:** <br>
 The raw density data are extracted from SCFT trajectories that converge to five known network phases: single-gyroid, single-diamond, 
-singe-primitive, double-gyroid, and double-primitive. The inputs and outputs of the SCFT simulations are provided in [Data Repository for U of M (DRUM)](link).
+single-primitive, double-gyroid, and double-primitive. The inputs and outputs of the SCFT simulations are provided in [Data Repository for U of M (DRUM)](link).
 
 
 
 - **Data Augmentation:** <br>
 
   - **Description:**  
-    Each `.rf` file, representing a density field obtained from the SCFT calculation, undergoes a series of data augmentation techniques: tiling, random translation, and rotation. Fields showcasing unphysical density values, specifically where `phi_A > 1` or `phi_A < 0`, are excluded.
+    Each `.rf` file, representing a density field obtained from the SCFT calculation, undergoes a series of data augmentation techniques: tiling, random translation, and rotation. 
+  Fields with unphysical density values, specifically where `phi_A > 1` or `phi_A < 0`, are excluded.
 
   - **Command Line Execution:**  
     Navigate to the preprocessing directory and execute the data processing script:
@@ -100,7 +101,7 @@ singe-primitive, double-gyroid, and double-primitive. The inputs and outputs of 
     `--dataroot`: directory that contains processed training data. <br>
     `--out_dir_images`: directory to save generated tensor (`.pt`) during the training process.<br>
     `--out_dir_model`: directory to save model parameters (`.pt`) during the training process.<br>
-    Optional arguments, such as batch size, can be found in the codes.<br>
+    Optional arguments, such as batch size, can be found in the scripts.<br>
     <br>
 - **Visualizing the Training Progression:** <br>
 The output images from a set of fixed noise can be visualized to track the training progression using `isosurface_visualizer'. 
@@ -134,7 +135,7 @@ All the PSCF inputs and outputs are provided in [DRUM](link).
 
 ## Results
 
-- Convergence: 545/5000 <br>
+- Convergence: 545 out of 5000 SCFT calculations converged <br>
 - Candidate network phases: 349 <br>
 - De novo generation of all known network phases <br>
 - Discovery of novel network phases <br>
@@ -142,7 +143,7 @@ All the PSCF inputs and outputs are provided in [DRUM](link).
 
 <p align="center">
 <img src="docs/figs/histogram.png" alt="histogram" width="800"><br>
-<font size="-1"><b>Fig. 3:</b>  Free energy histogram of generated candidate network phases and represented network phases.
+<font size="-1"><b>Fig. 3:</b>  Free energy histogram of generated candidate network phases and representive network phases.
 </p>
 
 ## Contributing
@@ -155,6 +156,6 @@ The authors would like to thank Qingyuan Jiang, Benjamin R. Magruder, Dr. Guo Ka
 and Prof. Frank S. Bates for their valuable inputs.
 
 This work was supported primarily by the National Science Foundation through the University of Minnesota MRSEC under Award Number DMR-2011401. 
-Computational resources provided in part by the Minnesota Supercomputing Institute.
+Computational resources were provided in part by the Minnesota Supercomputing Institute.
 
 
