@@ -13,6 +13,10 @@ from torch.utils.data import Dataset, DataLoader
 MANUAL_SEED = 999
 
 class NetsDataset(Dataset):
+    """
+    A custom Dataset class that reads network data from .txt files.
+    """
+
     def __init__(self, nets_dir):
         self.nets_dir = nets_dir
         self.nets_list = [file for file in os.listdir(nets_dir) if file.endswith('.txt')]
@@ -25,6 +29,18 @@ class NetsDataset(Dataset):
         nets = np.loadtxt(nets_path).astype('float32')
         assert len(nets) == 32 * 32 * 32, "nets shape not on 32 * 32 * 32"
         return torch.from_numpy(nets).reshape((1, 32, 32, 32))
+
+class SingleTensorDataset(Dataset):
+    """
+    A custom Dataset class for a single tensor.
+    """
+
+    def __init__(self, tensor):
+        self.tensor = tensor
+    def __len__(self):
+        return len(self.tensor)
+    def __getitem__(self, idx):
+        return self.tensor[idx]
 
 class Generator(nn.Module):
     def __init__(self, ngpu, nz=100, ngf=32, nc=1):
@@ -70,9 +86,8 @@ class Discriminator(nn.Module):
         return self.main(input)
 
 
-#  weights initialization on netG and netD
 def weights_init(m):
-    # Initialize weights for Conv and BatchNorm layers
+    # Initialize weights for Conv and BatchNorm layers of NetG and NetD
     classname = m.__class__.__name__
     if classname.find('Conv') != -1:
         nn.init.normal_(m.weight.data, 0.0, 0.02)
@@ -190,9 +205,16 @@ def main(args):
     random.seed(MANUAL_SEED)
     torch.manual_seed(MANUAL_SEED)
 
-    dataset = NetsDataset(nets_dir=args.dataroot)
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=args.batch_size,
-                                             shuffle=True, num_workers=args.workers)
+    # Load the dataset from .txt files
+    # dataset = NetsDataset(nets_dir=args.dataroot)
+    # dataloader = torch.utils.data.DataLoader(dataset, batch_size=args.batch_size,
+    #                                          shuffle=True, num_workers=args.workers)
+
+    # Load the tensor directly from the .pt file
+    data_tensor = torch.load(args.dataroot)
+    dataloader = torch.utils.data.DataLoader(SingleTensorDataset(data_tensor),
+                                             batch_size=args.batch_size, shuffle=True, num_workers=args.workers)
+
     device = torch.device("cuda:0" if torch.cuda.is_available() and args.ngpu > 0 else "cpu")
 
     netG, netD = initialize_models(args, device)
@@ -203,7 +225,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataroot',required=True, help='input data folder')
+    parser.add_argument('--dataroot',required=True, help='input path to data')
     parser.add_argument('--out_dir_images', default='.', help='output dir for generated 3D images')
     parser.add_argument('--out_dir_model', default='.', help='output dir for model')
     parser.add_argument('--workers', type=int, default=1, help='number of workers')
@@ -214,7 +236,7 @@ if __name__ == '__main__':
     parser.add_argument('--ngf', type=int, default=64, help='size of feature maps in generator')
     parser.add_argument('--ndf', type=int, default=64, help='size of feature maps in discriminator')
     parser.add_argument('--nepochs', type=int, default=60, help='number of training epochs')
-    parser.add_argument('--lr', type=float, default=0.0002, help='learning rate for optimisers')
+    parser.add_argument('--lr', type=float, default=0.0002, help='learning rate for optimizers')
     parser.add_argument('--beta1', type=float, default=0.5, help='beta1 hyperparameter for Adam optimizer')
     parser.add_argument('--save_iters', type=int, default=150, help='step for saving paths and generated images')
     args = parser.parse_args()

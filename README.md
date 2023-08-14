@@ -54,7 +54,8 @@ add citation here
 
 Acquire both raw and processed density fields [here](https://link_to_drum_repo). 
 The `data` folder consists of 18,273 3D density field data in `.txt` format, which can be used directly for training.
-For training, every data point is viewed as a grayscale 3D image (1 x 32 x 32 x 32).
+For training, every data point is viewed as a grayscale 3D image (1 x 32 x 32 x 32). 
+Alternatively, a PyTorch tensor of size (18,273 x 1 x 32 x 32 x 32) was saved in `data.pt` for direct loading.
 
 ## Usage
 
@@ -95,10 +96,10 @@ single primitive, double gyroid, and double primitive. The inputs and outputs of
   Run the training script using the following commands:
    ```sh
      cd ./train
-     python GAN_train.py --dataroot /path/to/data --out_dir_images /path/to/output/image/dir --out_dir_model /path/to/output/model/dir
+     python GAN_train.py --dataroot /path/to/data.pt --out_dir_images /path/to/output/image/dir --out_dir_model /path/to/output/model/dir
    ```
 
-    `--dataroot`: directory that contains processed training data. <br>
+    `--dataroot`: path to processed training data (`.pt`) <br>
     `--out_dir_images`: directory to save generated tensor (`.pt`) during the training process.<br>
     `--out_dir_model`: directory to save model parameters (`.pt`) during the training process.<br>
     Optional arguments, such as batch size, can be found in the scripts.<br>
