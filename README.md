@@ -53,16 +53,16 @@ add citation here
 ### Data Downloads
 
 Acquire both raw and processed density fields [here](https://link_to_drum_repo). 
-The `data.pt` under `data` folder consists of 18,273 3D density field data (grayscale 3D images), 
-which is presented as a PyTorch tensor of size (18,273 x 1 x 32 x 32 x 32) and can be loaded directly for training.
+The `data.pt` file, located in the `data` folder, contains 18,273 3D density field datasets. These datasets can be treated as grayscale 3D images. 
+The data is stored as a PyTorch tensor with dimensions (18,273 x 1 x 32 x 32 x 32) and can be directly loaded for training.
 
 ## Usage
 
 ### Data Preparation
 - **Data Generation:** <br>
+
 The raw density data are extracted from SCFT trajectories that converge to five known network phases: single gyroid, single diamond, 
 single primitive, double gyroid, and double primitive. The inputs and outputs of the SCFT simulations are provided in [Data Repository for U of M (DRUM)](link).
-
 
 
 - **Data Augmentation:** <br>
@@ -99,7 +99,7 @@ single primitive, double gyroid, and double primitive. The inputs and outputs of
    ```
 
     `--dataroot`: path to processed training data (`.pt`) <br>
-    `--out_dir_images`: directory to save generated images saved as tensors (`.pt`) of size (64 x 1 x 32 x 32 x 32) during the training process.<br>
+    `--out_dir_images`: directory to save generated images as tensors (`.pt`) of size (64 x 1 x 32 x 32 x 32) during the training process.<br>
     `--out_dir_model`: directory to save model parameters (`.pt`) during the training process.<br>
     Optional arguments, such as batch size, can be found in the scripts.<br>
     <br>
@@ -110,7 +110,7 @@ An example is provided in `./train/visualize_progress.py`.
     visualizer = IsosurfaceVisualizer(isosurface_value=0.5)
     visualizer.visualize_directory(<input_directory>, <output_directory>>)
   ```
-  `<input_directory>`: directory to the generated images saved as tensors (`.pt`) of size (64 x 1 x 32 x 32 x 32).<br>
+  `<input_directory>`: directory to the generated images, which are saved as tensors (`.pt`) of size (64 x 1 x 32 x 32 x 32).<br>
 `<output_directory>`: directory to save isosurface plots (`.png`).<br>
 
 <p align="center">
@@ -124,7 +124,7 @@ Generate density fields by feeding random latent vectors to the generator.
     cd ./postprocessing
     python generate_guess.py --weight_path ../model/Gweights_45_15.pt --out_dir /path/to/output/dir --num_images 5000
  ```
-`--weight_path`: path to the pretrained generator weights. <br>
+`--weight_path`: path to the model parameters for the pretrained generator. <br>
 `--out_dir`: directory to save generated guesses.<br>
 `--num_images`: number of density initial guesses to generate.<br>
 
