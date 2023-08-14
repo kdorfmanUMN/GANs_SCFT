@@ -2,6 +2,7 @@ import numpy as np
 from scipy.interpolate import RegularGridInterpolator
 import os
 import argparse
+import torch
 
 
 class DataProcessor:
@@ -89,7 +90,10 @@ class DataProcessor:
         cell_data, dimensions = self.extract_data(in_filename)
         if cell_data is not None:
             cell_data_T = self.crop_rotate(cell_data, dimensions, new_grid_size)
-            np.savetxt(out_filename, cell_data_T, delimiter='\n')
+            if out_filename.endswith('.txt'):
+                np.savetxt(out_filename, cell_data_T, delimiter='\n')
+            if out_filename.endswith('.pt') or out_filename.endswith('.pth'):
+                torch.save(torch.tensor(cell_data_T, dtype=torch.float32), out_filename)
 
 
 if __name__ == '__main__':

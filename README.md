@@ -53,9 +53,8 @@ add citation here
 ### Data Downloads
 
 Acquire both raw and processed density fields [here](https://link_to_drum_repo). 
-The `data` folder consists of 18,273 3D density field data in `.txt` format, which can be used directly for training.
-For training, every data point is viewed as a grayscale 3D image (1 x 32 x 32 x 32). 
-Alternatively, a PyTorch tensor of size (18,273 x 1 x 32 x 32 x 32) was saved in `data.pt` for direct loading.
+The `data.pt` under `data` folder consists of 18,273 3D density field data (grayscale 3D images), 
+which is presented as a PyTorch tensor of size (18,273 x 1 x 32 x 32 x 32) and can be loaded directly for training.
 
 ## Usage
 
@@ -76,10 +75,10 @@ single primitive, double gyroid, and double primitive. The inputs and outputs of
     Navigate to the preprocessing directory and execute the data processing script:
      ```sh
        cd ./preprocessing
-       python data_processor.py --in_filename /path/to/input --out_filename /path/to/output --grid 32 32 32
+       python data_processor.py --in_filename /path/to/input.rf --out_filename /path/to/output.pt --grid 32 32 32
      ```
      `--in_filename`: Path to the input density field file (`.rf`).<br>
-     `--out_filename`: Path to the output 3D image file (`.txt`).<br>
+     `--out_filename`: Path to the output 3D image. Must ends with `.pt` or `.pth` <br>
      `--grid`: (Optional) A tuple specifying the output dimensions. The default is (32, 32, 32).<br>
 
   - **Python Method Execution:**  
@@ -100,18 +99,18 @@ single primitive, double gyroid, and double primitive. The inputs and outputs of
    ```
 
     `--dataroot`: path to processed training data (`.pt`) <br>
-    `--out_dir_images`: directory to save generated tensor (`.pt`) during the training process.<br>
+    `--out_dir_images`: directory to save generated images saved as tensors (`.pt`) of size (64 x 1 x 32 x 32 x 32) during the training process.<br>
     `--out_dir_model`: directory to save model parameters (`.pt`) during the training process.<br>
     Optional arguments, such as batch size, can be found in the scripts.<br>
     <br>
 - **Visualizing the Training Progression:** <br>
-The output images from a set of fixed noise can be visualized to track the training progression using `isosurface_visualizer'. 
-An example is provided in './train/visualize_progress.py'.
+The output images from a set of fixed noise can be visualized to track the training progression using `isosurface_visualizer`. 
+An example is provided in `./train/visualize_progress.py`.
   ```py
     visualizer = IsosurfaceVisualizer(isosurface_value=0.5)
     visualizer.visualize_directory(<input_directory>, <output_directory>>)
   ```
-  `<input_directory>`: directory to the saved generated tensor (`.pt`).<br>
+  `<input_directory>`: directory to the generated images saved as tensors (`.pt`) of size (64 x 1 x 32 x 32 x 32).<br>
 `<output_directory>`: directory to save isosurface plots (`.png`).<br>
 
 <p align="center">
