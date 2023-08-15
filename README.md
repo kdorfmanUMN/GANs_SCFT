@@ -78,7 +78,7 @@ single primitive, double gyroid, and double primitive. The inputs and outputs of
        python data_processor.py --in_filename /path/to/input.rf --out_filename /path/to/output.pt --grid 32 32 32
      ```
      `--in_filename`: Path to the input density field file (`.rf`).<br>
-     `--out_filename`: Path to the output 3D image. Must ends with `.pt` or `.pth` <br>
+     `--out_filename`: Path to the output 3D image. Must end with `.pt` or `.pth` <br>
      `--grid`: (Optional) A tuple specifying the output dimensions. The default is (32, 32, 32).<br>
 
   - **Python Method Execution:**  
