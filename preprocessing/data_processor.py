@@ -59,12 +59,11 @@ class DataProcessor:
         """
         Crops and rotates the data.
         """
-        # Tile the original cell to a supercell
-        coords = np.linspace(-2, 2,
-                             dimensions[0] * 4)  # need slight modification if original Ngrid on three axes are not identical.
-        supercell = np.tile(density_data, (4, 4, 4))
+        # Original grid coordinates
+        coords = np.linspace(0, 1, dimensions[0])  # need slight modification if original Ngrid on three axes are not identical.
+
         # Set up interpolator using the supercell.
-        interpolator = RegularGridInterpolator((coords, coords, coords), supercell, method='quintic')
+        interpolator = RegularGridInterpolator((coords, coords, coords), density_data, method='quintic')
 
         # Define size of the cropped region. [1, 1, 1] is identical to the original cell.
         crop_sizes = [1, 1, 1]
@@ -77,6 +76,11 @@ class DataProcessor:
         crop_translation = np.random.rand(3) - 0.5
         rotate_coords = np.dot(crop_coords.reshape(-1, 3), self.rand_rotation_matrix())
         crop_coords_translated = rotate_coords + crop_translation
+
+        # Wrap coordinates to the interval [0, 1]
+        crop_coords_translated[:, 0] %= 1
+        crop_coords_translated[:, 1] %= 1
+        crop_coords_translated[:, 2] %= 1
 
         # Interpolate data on new grid
         new_grid = interpolator(crop_coords_translated)
@@ -105,3 +109,4 @@ if __name__ == '__main__':
 
     data_processor = DataProcessor()
     data_processor.process_files(args.in_filename, args.out_filename, tuple(args.grid))
+    # data_processor.process_files('/Users/pengyuchen/Documents/GAN/test/SG.rf', '/Users/pengyuchen/Documents/GAN/test/SG_augmented.txt', [32,32,32])

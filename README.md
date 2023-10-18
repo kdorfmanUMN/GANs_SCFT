@@ -1,4 +1,4 @@
-# GANs-SCFT (Generative Block Polymer Phase Discovery)
+# GANs-SCFT (Gaming self-consistent field theory: Generative block polymer phase discovery)
 
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
@@ -17,7 +17,7 @@
 - [Acknowledgments](#acknowledgments)
 
 ## Overview
-This repository is part of the submitted work [Generative Block Polymer Phase Discovery](http://doi/), which describes a method 
+This repository is part of the submitted work [Gaming self-consistent field theory: Generative block polymer phase discovery](https://doi.org/10.1073/pnas.2308698120), which describes a method 
 to train Deep Convolutional Generative Adversarial Networks (DCGANs) to generate initial guess fields for Self-Consistent
 Field Theory (SCFT) simulations for phase discovery.
 
@@ -52,7 +52,7 @@ add citation here
   ```
 ### Data Downloads
 
-Acquire both raw and processed density fields [here](https://link_to_drum_repo). 
+Acquire both raw and processed density fields [here](https://hdl.handle.net/11299/257550). 
 The `data.pt` file, located in the `data` folder, contains 18,273 3D density field datasets. These datasets can be treated as grayscale 3D images. 
 The data is stored as a PyTorch tensor with dimensions (18,273 x 1 x 32 x 32 x 32) and can be directly loaded for training.
 
@@ -62,7 +62,7 @@ The data is stored as a PyTorch tensor with dimensions (18,273 x 1 x 32 x 32 x 3
 - **Data Generation:** <br>
 
 The raw density data are extracted from SCFT trajectories that converge to five known network phases: single gyroid, single diamond, 
-single primitive, double gyroid, and double primitive. The inputs and outputs of the SCFT simulations are provided in [Data Repository for U of M (DRUM)](link).
+single primitive, double gyroid, and double primitive. The initial guesses and example SCFT simulation are provided in [Data Repository for U of M (DRUM)](https://hdl.handle.net/11299/257550).
 
 
 - **Data Augmentation:** <br>
@@ -122,7 +122,7 @@ An example is provided in `./train/visualize_progress.py`.
 Generate density fields by feeding random latent vectors to the generator.
   ```sh
     cd ./postprocessing
-    python generate_guess.py --weight_path ../model/Gweights_45_15.pt --out_dir /path/to/output/dir --num_images 5000
+    python generate_guess.py --weight_path ../model/Gweights_45.pt --out_dir /path/to/output/dir --num_images 5000
  ```
 `--weight_path`: path to the model parameters for the pretrained generator. <br>
 `--out_dir`: directory to save generated guesses.<br>
@@ -131,7 +131,7 @@ Generate density fields by feeding random latent vectors to the generator.
 ### SCFT backends
 
 Generated density fields are used as initial guesses for SCFT simulations at a fixed state point. 
-All the PSCF inputs and outputs are provided in [DRUM](link).
+All the PSCF inputs and outputs are provided in [DRUM](https://hdl.handle.net/11299/257550).
 
 ## Results
 
@@ -152,8 +152,8 @@ For contributing or submitting pull requests, please contact the author:
 
 ## Acknowledgments
 
-The authors would like to thank Qingyuan Jiang, Benjamin R. Magruder, Dr. Guo Kang Cheong, Prof. Chris J. Bartel, 
-and Prof. Frank S. Bates for their valuable inputs.
+The authors would like to thank Qingyuan Jiang, Benjamin Magruder, Dr. Guo Kang Cheong, Prof. Chris Bartel, 
+and Prof. Frank Bates for their valuable inputs.
 
 This work was supported primarily by the National Science Foundation through the University of Minnesota MRSEC under Award Number DMR-2011401. 
 Computational resources were provided in part by the Minnesota Supercomputing Institute.
