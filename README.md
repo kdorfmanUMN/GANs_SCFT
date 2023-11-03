@@ -34,7 +34,7 @@ Field Theory (SCFT) simulations for phase discovery.
 ### Citing This Work
 For referencing or leveraging parts of this work, please refer to:
 
-add citation here
+Pengyu Chen, Kevin D. Dorfman, _Gaming self-consistent field theory: Generative block polymer phase discovery_, 120 (45) e2308698120 (2023)
 
 ### Relevant Work
 - **GANs:** [Generative Adversarial Networks](https://arxiv.org/abs/1406.2661).
